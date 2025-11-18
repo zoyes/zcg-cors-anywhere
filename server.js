@@ -15,6 +15,15 @@ function parseEnvList(env) {
   }
   return env.split(',');
 }
+// in server.js (cors-anywhere)
+const SECRET = process.env.ZOYES_FORM_SECRET;
+
+server.on('request', (req, res) => {
+  if (req.headers['x-zoyes-key'] !== SECRET) {
+    res.statusCode = 403;
+    res.end('Forbidden');
+    return;
+  }
 
 // Set up rate-limiting to avoid abuse of the public CORS Anywhere server.
 var checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELIMIT);
@@ -46,4 +55,7 @@ cors_proxy.createServer({
   },
 }).listen(port, host, function() {
   console.log('Running CORS Anywhere on ' + host + ':' + port);
+});
+
+  // continue to CORS Anywhere proxy logic
 });
